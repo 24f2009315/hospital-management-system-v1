@@ -21,7 +21,6 @@ class Doctor(db.Model):
     email=db.Column(db.String(),unique=True,nullable=False)
     password=db.Column(db.String(),nullable=False)
     department_id=db.Column(db.Integer(),db.ForeignKey("department.id"))
-    role = db.Column(db.String(),nullable=False)
 
 class Patient(db.Model):
     __tablename__ = "patient"
@@ -34,7 +33,6 @@ class Patient(db.Model):
     email=db.Column(db.String(),unique=True,nullable=False)
     password=db.Column(db.String(),nullable=False)
     address=db.Column(db.String())
-    role = db.Column(db.String(),nullable=False)
 
 class Appointment(db.Model):
     __tablename__ = "appointment"
