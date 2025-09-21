@@ -1,5 +1,5 @@
 from flask import Flask
-from application.models import db,Admin
+from application.models import db,User
 from werkzeug.security import generate_password_hash
 
 def create_app():
@@ -10,8 +10,8 @@ def create_app():
     db.init_app(app)
     with app.app_context():
         db.create_all()
-        if not Admin.query.filter_by(username="vaishnavi").first():
-            admin=Admin(name = "Vaishnavi" , username = "vaishnavi" , password=generate_password_hash("vaishnavi"),role="admin")
+        if not User.query.filter_by(username="vaishnavi").first():
+            admin=User(name = "Vaishnavi" , username = "vaishnavi" , password=generate_password_hash("vaishnavi"),role="admin")
             db.session.add(admin)
             db.session.commit()
     return app
