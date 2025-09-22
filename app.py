@@ -1,6 +1,8 @@
-from flask import Flask
+from flask import Flask , Blueprint
 from application.models import db,User
 from werkzeug.security import generate_password_hash
+from application.auth import api as auth_api
+from application.admin_api import api as admin_api
 
 def create_app():
     app=Flask(__name__)
@@ -14,6 +16,8 @@ def create_app():
             admin=User(name = "Vaishnavi" , username = "vaishnavi" , password=generate_password_hash("vaishnavi"),role="admin")
             db.session.add(admin)
             db.session.commit()
+    app.register_blueprint(auth_api)
+    app.register_blueprint(admin_api)
     return app
 
 app=create_app()
