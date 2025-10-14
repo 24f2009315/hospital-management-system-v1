@@ -1,0 +1,29 @@
+{% extends 'admin/layout.html' %}
+
+{% block body %}
+<div class="container mt-4">
+    <h3 class="mb-3">Search Results for "{{ query }}"</h3>
+
+    <div class="card mb-3">
+        <div class="card-header">Doctors</div>
+        <ul class="list-group list-group-flush">
+            {% for doctor in doctors %}
+                <li class="list-group-item">{{ doctor.name }} - {{ doctor.specialization }}</li>
+            {% else %}
+                <li class="list-group-item">No doctors found</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="card">
+        <div class="card-header">Patients</div>
+        <ul class="list-group list-group-flush">
+            {% for patient in patients %}
+                <li class="list-group-item">{{ patient.name }} - {{ patient.contact }} (ID: {{ patient.id }})</li>
+            {% else %}
+                <li class="list-group-item">No patients found</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

@@ -1,14 +1,14 @@
 {% extends "admin/layout.html" %}
 {% block body1 %}
-    <form action="{{ url_for('admin_api.add_doctors') }}" method="post">
-        <h3>Add a doctor</h3>
+    <form action="{{ url_for('admin_api.update_doctor',doctor_id=doctor_id) }}" method="post">
+        <h3>Update doctor</h3>
         <div class="mb-3">
             <label for="formGroupExampleInput" class="form-label">Name of the doctor</label>
-            <input type="text" class="form-control" id="formGroupExampleInput" name = "name" placeholder="Enter doctor's name" required>
+            <input type="text" class="form-control" id="formGroupExampleInput" name = "name" placeholder="Enter doctor's name" value="{{ name }}" required>
         </div>
         <div class="mb-3">
             <label for="formGroupExampleInput2" class="form-label">Username of the doctor</label>
-            <input type="text" class="form-control" id="formGroupExampleInput2" name = "username" placeholder="Enter doctor's username" required>
+            <input type="text" class="form-control" id="formGroupExampleInput2" name = "username" placeholder="Enter doctor's username" value="{{ username }}" required>
         </div>
         <div class="mb-3">
             <label for="formGroupExampleInput2" class="form-label">Password of the doctor</label>
@@ -16,7 +16,7 @@
         </div>
         <div class="mb-3">
             <label for="formGroupExampleInput2" class="form-label">Specialization of the doctor</label>
-            <select name="specialization" id="specialization" required>
+            <select name="specialization" id="specialization" value="{{ specialization }}" required>
                 <option value="" disabled selected>Select Specialization</option>
                 <option value="Cardiology">Cardiology</option>
                 <option value="Neurology">Neurology</option>
@@ -24,7 +24,7 @@
             </select>
         <div class="mb-3">
             <label for="formGroupExampleInput2" class="form-label">Enter the Department</label>
-            <input type="number" class="form-control" id="formGroupExampleInput2" name = "department_id" placeholder="Enter doctor's department" required>
+            <input type="number" class="form-control" id="formGroupExampleInput2" name = "department_id" placeholder="Enter doctor's department" value="{{ department_id }}" required>
         </div>
         <button type="submit" class="btn btn-outline-dark">Add</button>
     </form>
