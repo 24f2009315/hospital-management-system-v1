@@ -1,0 +1,47 @@
+{% extends "patient/layout.html" %}
+{% block body %}
+  <div class="container-fluid">
+    <h2>Welcome, {{ name }}</h2>
+  </div>
+  <h4>Departments</h4>
+  {% if all_departments %}
+    <ul class="list-group mt-3">
+      {% for dept in all_departments %}
+        <li class="list-group-item">
+          <span>{{ dept.department_name }}</span>
+          <a href="#">View</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="mt-3">No Departments</p>
+  {% endif %}
+  <a href="{{ url_for('patient_api.book_appointment') }}">Book an Appointment</a>
+  <h4>Upcoming Appointments</h4>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Appointment ID</th>
+        <th>Doctor ID</th>
+        <th>Department</th>
+        <th>Date</th>
+        <th>Time</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for appt in appointments %}
+      <tr>
+        <td>{{ appt.appointment_id }}</td>
+        <td>{{ appt.doctor_id }}</td>
+        <td>{{ doctor_department_map.get(appt.doctor_id, "N/A") }}</td>
+        <td>{{ appt.date }}</td>
+        <td>{{ appt.time }}</td>
+        <td>
+          <a href="{{ url_for('doctor_api.mark_cancelled', appointment_id=appt.appointment_id) }}" class="btn btn-danger btn-sm">Cancel</a>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+{% endblock %}

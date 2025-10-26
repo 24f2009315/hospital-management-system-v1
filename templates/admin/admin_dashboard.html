@@ -2,38 +2,52 @@
 {% block body %}
     <h1>Doctors</h1>
     <div class="container-fluid d-flex flex-wrap">
-        {% for doc in doctor %}
-            <div class="card col-3 m-2">
-                <div class="card-body">
-                    <h3 align="center">{{ doc.name }}</h3>
-                    <a href="{{ url_for('admin_api.delete_doctor',id=doc.doctor_id)}}" class="btn btn-outline-danger">Delete</a>
-                    <a href="{{ url_for('admin_api.update_doctor',doctor_id=doc.doctor_id) }}" class="btn btn-outline-warning">Update</a>
-                </div>
+        {% for doc in doctors %}
+        <div class="card col-3 m-2">
+            <div class="card-body">
+                <h3 align="center">{{ doc.name }}</h3>
+                <p>Department: {{ doc.department }}</p>
+                <a href="{{ url_for('admin_api.delete_doctor', id=doc.doctor_id) }}" class="btn btn-outline-danger">Delete</a>
+                <a href="{{ url_for('admin_api.update_doctor', doctor_id=doc.doctor_id) }}" class="btn btn-outline-warning">Update</a>
             </div>
+        </div>
         {% endfor %}
     </div>
     <h1>Patients</h1>
     <div class="container-fluid d-flex flex-wrap">
-        {% for pat in patient %}
+        {% for pat in patients %}
             <div class="card col-3 m-2">
                 <div class="card-body">
                     <h3 align="center">{{ pat.name }}</h3>
-                    <a href="{{ url_for('admin_api.delete_patient',id=pat.patient_id)}}" class="btn btn-outline-danger">Delete</a>
+                    <a href="{{ url_for('admin_api.delete_patient', id=pat.id) }}" class="btn btn-outline-danger">Delete</a>
                 </div>
             </div>
         {% endfor %}
     </div>
     <h1>Upcoming Appointments</h1>
-    <div class="container-fluid d-flex flex-wrap">
-        {% for app in appointments %}
-            <div class="card col-3 m-2">
-                <div class="card-body">
-                    <h3 align="center">{{ app.name }}</h3>
-                    <a href="{{ url_for('admin_api.delete_doctor',id=doc.doctor_id)}}" class="btn btn-outline-danger">Delete</a>
-                    <a href="{{ url_for('admin_api.update_doctor',doctor_id=doc.doctor_id) }}" class="btn btn-outline-warning">Update</a>
-                </div>
-            </div>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Appointment ID</th>
+                <th>Patient ID</th>
+                <th>Doctor ID</th>
+                <th>Department</th>
+                <th>Patient History</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for appt in appointments %}
+            <tr>
+                <td>{{ appt.appointment_id }}</td>
+                <td>{{ appt.patient_id }}</td>
+                <td>{{ appt.doctor_id }}</td>
+                <td>{{ doctor_department_map.get(appt.doctor_id, "N/A") }}</td>
+                <td>
+                    <a href="#">View</a>
+                </td>
+            </tr>
         {% endfor %}
-    </div>
+        </tbody>
+    </table>
     <a href="{{ url_for('auth.login') }}">logout</a>
 {% endblock %}

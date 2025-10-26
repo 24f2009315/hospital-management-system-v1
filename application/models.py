@@ -11,6 +11,9 @@ class User(db.Model):
     password = db.Column(db.String(),nullable=False)
     role = db.Column(db.String(),nullable=False)
 
+    doctor = db.relationship("Doctor",backref="user",uselist=False,cascade="all, delete")
+    patient = db.relationship("Patient",backref="user",uselist=False,cascade="all, delete")
+
 class Doctor(db.Model):
     __tablename__ = "doctor"
 
@@ -18,8 +21,7 @@ class Doctor(db.Model):
     doctor_id = db.Column(db.Integer(),db.ForeignKey('user.user_id'),nullable=False)
     name = db.Column(db.String(),nullable=False)
     username = db.Column(db.String(),nullable=False)
-    specialization=db.Column(db.String(),nullable=False)
-    department_id=db.Column(db.Integer(),db.ForeignKey("department.department_id"))
+    department=db.Column(db.String(),nullable=False)
 
 class Patient(db.Model):
     __tablename__ = "patient"
@@ -33,11 +35,12 @@ class Patient(db.Model):
     contact=db.Column(db.String(),unique=True,nullable=False)
     address=db.Column(db.String())
 
+    appointments=db.relationship("Appointment",backref="patient",cascade="all, delete-orphan")
+
 class Appointment(db.Model):
     __tablename__ = "appointment"
 
-    id = db.Column(db.Integer(),primary_key=True,autoincrement=True)
-    appointment_id = db.Column(db.Integer(),nullable=False)
+    appointment_id = db.Column(db.Integer(),primary_key=True,autoincrement=True)
     patient_id = db.Column(db.Integer() , db.ForeignKey("patient.patient_id") ,nullable=False)
     doctor_id = db.Column(db.Integer() , db.ForeignKey("doctor.doctor_id"),nullable=True)
     date = db.Column(db.Date(),nullable = False)

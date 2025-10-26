@@ -15,16 +15,13 @@
             <input type="password" class="form-control" id="formGroupExampleInput2" name = "password" placeholder="Enter doctor's password" required>
         </div>
         <div class="mb-3">
-            <label for="formGroupExampleInput2" class="form-label">Specialization of the doctor</label>
-            <select name="specialization" id="specialization" value="{{ specialization }}" required>
-                <option value="" disabled selected>Select Specialization</option>
+            <label for="formGroupExampleInput2" class="form-label">Department of the doctor</label>
+            <select name="department" id="department" value="{{ department }}" required>
+                <option value="" disabled selected>Select Department</option>
                 <option value="Cardiology">Cardiology</option>
                 <option value="Neurology">Neurology</option>
                 <option value="Pediatrics">Pediatrics</option>
             </select>
-        <div class="mb-3">
-            <label for="formGroupExampleInput2" class="form-label">Enter the Department</label>
-            <input type="number" class="form-control" id="formGroupExampleInput2" name = "department_id" placeholder="Enter doctor's department" value="{{ department_id }}" required>
         </div>
         <button type="submit" class="btn btn-outline-dark">Add</button>
     </form>

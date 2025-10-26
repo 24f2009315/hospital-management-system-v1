@@ -3,6 +3,8 @@ from application.models import db,User
 from werkzeug.security import generate_password_hash
 from application.auth import api as auth_api
 from application.admin_api import api as admin_api
+from application.doctor_api import api as doctor_api
+from application.patient_api import api as patient_api
 
 def create_app():
     app=Flask(__name__)
@@ -18,6 +20,8 @@ def create_app():
             db.session.commit()
     app.register_blueprint(auth_api)
     app.register_blueprint(admin_api)
+    app.register_blueprint(doctor_api)
+    app.register_blueprint(patient_api)
     return app
 
 app=create_app()

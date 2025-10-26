@@ -18,9 +18,9 @@ def login():
         return render_template("login.html")
     
     if user.role == "patient":
-        return f"you are a patient"
+        return redirect(url_for("patient_api.patient_dashboard"))
     elif user.role == "doctor":
-        return f"you are a doctor"
+        return redirect(url_for("doctor_api.doctor_dashboard"))
     return redirect(url_for("admin_api.admin_dashboard"))
 
 @api.route("/signup",methods=["GET","POST"])

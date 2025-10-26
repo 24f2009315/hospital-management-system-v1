@@ -1,0 +1,32 @@
+{% extends "patient/layout.html" %}
+{% block body1 %}
+<div class="container mt-4">
+  <h2 class="mb-4">Book an Appointment</h2>
+
+  <form method="POST" class="card p-4 shadow-sm">
+    <div class="mb-3">
+      <label for="doctor" class="form-label">Select Doctor</label>
+      <select name="doctor_id" id="doctor" class="form-select" required>
+        <option value="">-- Select a Doctor --</option>
+        {% for doc in doctors %}
+          <option value="{{ doc.doctor_id }}">{{ doc.name }} - {{ doc.specialization }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label for="date" class="form-label">Date</label>
+        <input type="date" name="date" id="date" class="form-control" required>
+      </div>
+      <div class="col-md-6 mb-3">
+        <label for="time" class="form-label">Time</label>
+        <input type="time" name="time" id="time" class="form-control" required>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-outline-dark">Confirm Appointment</button>
+    <a href="{{ url_for('patient_api.patient_dashboard') }}">Your Dashboard</a>
+  </form>
+</div>
+{% endblock %}

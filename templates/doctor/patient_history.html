@@ -1,0 +1,29 @@
+<h1>Patient History</h1>
+<p>Patient Name:</p>
+<form action="get">
+{% if treatments %}
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Appointment ID</th>
+            <th>Diagnosis</th>
+            <th>Prescription</th>
+            <th>Notes</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for treatment in treatments %}
+        <tr>
+            <td>{{ treatment.appointment_id }}</td>
+            <td>{{ treatment.diagnosis }}</td>
+            <td>{{ treatment.prescription }}</td>
+            <td>{{ treatment.notes if treatment.notes else "-" }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No history available for this patient.</p>
+{% endif %}
+<a href="/doctor_dashboard">Go Back</a>
+</form>

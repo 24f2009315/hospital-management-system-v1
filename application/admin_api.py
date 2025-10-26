@@ -1,5 +1,5 @@
 from flask import Flask , Blueprint , request , render_template ,flash,redirect,url_for
-from application.models import User , db ,Doctor,Patient
+from application.models import User , db ,Doctor,Patient,Appointment,Treatment
 from werkzeug.security import check_password_hash , generate_password_hash
 
 api = Blueprint("admin_api",__name__)
@@ -9,7 +9,10 @@ def admin_dashboard():
     if request.method == "GET":
         all_doctors = Doctor.query.all()
         all_patients = Patient.query.all()
-        return render_template("admin/admin_dashboard.html",doctor = all_doctors,patient = all_patients)
+        appointments = Appointment.query.all()
+        # Build doctor_id -> department map
+        doctor_department_map = {doc.doctor_id: doc.department for doc in Doctor.query.all()}
+        return render_template("admin/admin_dashboard.html",doctors = all_doctors,patients = all_patients,appointments=appointments,doctor_department_map=doctor_department_map)
     
 @api.route("/add_doctors",methods=["GET","POST"])
 def add_doctors():
@@ -20,23 +23,19 @@ def add_doctors():
         name = request.form.get("name")
         username = request.form.get("username")
         password = request.form.get("password")
-        specialization = request.form.get("specialization")
-        department_id = request.form.get("department_id")
+        department = request.form.get("department")
 
         if User.query.filter_by(username=username).first():
             flash("username already taken",category="invalid-username")
             return render_template("admin/add_doctors.html")
         
-        new_user = User(name = name , username = username , password = generate_password_hash(password) , role='doctor')
-
+        new_user = User(name=name,username=username,password=generate_password_hash(password),role="doctor")
         db.session.add(new_user)
-        db.session.commit()
+        db.session.flush()
 
-        new_doctor = Doctor(doctor_id = new_user.user_id , name = name , username = username , specialization = specialization , department_id = department_id)
-
+        new_doctor = Doctor(doctor_id=new_user.user_id,name=name,username=username,department=department)
         db.session.add(new_doctor)
         db.session.commit()
-
         flash("doctor added successfully",category="success")
         return redirect(url_for("admin_api.admin_dashboard"))
     return render_template("admin/add_doctors.html")
@@ -63,7 +62,7 @@ def delete_patient(id):
 
     if one_patient:
 
-        linked_user = User.query.get(one_patient.user_id)
+        linked_user = User.query.get(one_patient.patient_id)
         if linked_user:
             db.session.delete(linked_user)
 
@@ -72,6 +71,7 @@ def delete_patient(id):
 
     flash("Patient Deleted Successfully",category="alert-success")
     return redirect(url_for('admin_api.admin_dashboard'))
+
 
 @api.route("/admin_dashboard/update_doctor/<int:doctor_id>",methods=["GET","POST"])
 def update_doctor(doctor_id):
@@ -87,13 +87,11 @@ def update_doctor(doctor_id):
     name = request.form.get("name")
     username = request.form.get("username")
     password = request.form.get("password")
-    specialization = request.form.get("specialization")
-    department_id = request.form.get("department_id")
+    department = request.form.get("department")
 
     doctor.name = name
     doctor.username = username
-    doctor.specialization = specialization
-    doctor.department_id = department_id
+    doctor.department = department
 
     user.name = name
     user.username = username

@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{% block body %}
+    <h1>Update Patient History</h1>
+    <p>Patient Name: {{ patient.name }}</p>
+    <form action="{{ url_for('doctor_api.update_history',patient_id=patient.patient_id) }}" method="post">
+        <div class="row">
+            <div class="col">
+                <label for="formGroupExampleInput" class="form-label">Diagnosis</label>
+                <input type="text" class="form-control" name = "diagnosis" aria-label="diagnosis">
+            </div>
+            <div class="col">
+                <label for="formGroupExampleInput" class="form-label">Prescription</label>
+                <input type="text" class="form-control" name = "prescription" aria-label="prescription">
+            </div>
+            <div class="col">
+                <label for="formGroupExampleInput" class="form-label">Notes</label>
+                <input type="text" class="form-control" name = "notes" aria-label="Notes">
+            </div>
+        </div><br><br>
+        <button type="submit" class="btn btn-outline-dark">Update</button>
+        <a href="/doctor_dashboard">Go Back</a>
+    </form>
+{% endblock %}
