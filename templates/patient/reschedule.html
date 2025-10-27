@@ -1,0 +1,23 @@
+{% extends "patient/layout.html" %}
+{% block body %}
+<div class="container mt-4">
+    <h3>Reschedule Appointment</h3>
+    <p>Doctor: <strong>{{ doctor.name }}</strong></p>
+    <p>Current Date: {{ appointment.date }}</p>
+    <p>Current Time: {{ appointment.time }}</p>
+
+    <form method="POST" action="{{ url_for('patient_api.reschedule_appointment', appointment_id=appointment.appointment_id) }}">
+        <div class="mb-3">
+            <label for="date" class="form-label">New Date:</label>
+            <input type="date" name="date" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label for="time" class="form-label">New Time:</label>
+            <input type="time" name="time" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Reschedule</button>
+        <a href="{{ url_for('patient_api.patient_dashboard') }}" class="btn btn-secondary">Cancel</a>
+    </form>
+    <a href="{{ url_for('patient_api.patient_dashboard') }}">Go Back</a>
+</div>
+{% endblock %}
