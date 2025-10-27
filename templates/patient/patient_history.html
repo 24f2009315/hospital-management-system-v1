@@ -25,5 +25,5 @@
 {% else %}
 <p>No history available for this patient.</p>
 {% endif %}
-<a href="/doctor_dashboard">Go Back</a>
+<a href="{{ url_for('patient_api.patient_dashboard') }}">Go Back</a>
 </form>

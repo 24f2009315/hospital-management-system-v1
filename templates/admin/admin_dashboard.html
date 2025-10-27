@@ -24,7 +24,7 @@
             </div>
         {% endfor %}
     </div>
-    <h1>Upcoming Appointments</h1>
+    <h1>Booked Appointments</h1>
     <table class="table table-striped">
         <thead>
             <tr>
@@ -36,14 +36,64 @@
             </tr>
         </thead>
         <tbody>
-        {% for appt in appointments %}
+        {% for appt in booked %}
             <tr>
                 <td>{{ appt.appointment_id }}</td>
                 <td>{{ appt.patient_id }}</td>
                 <td>{{ appt.doctor_id }}</td>
                 <td>{{ doctor_department_map.get(appt.doctor_id, "N/A") }}</td>
                 <td>
-                    <a href="#">View</a>
+                    <a href="{{ url_for('admin_api.patient_history',patient_id=appt.patient_id)}}">View</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <h1>Completed Appointments</h1>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Appointment ID</th>
+                <th>Patient ID</th>
+                <th>Doctor ID</th>
+                <th>Department</th>
+                <th>Patient History</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for appt in completed %}
+            <tr>
+                <td>{{ appt.appointment_id }}</td>
+                <td>{{ appt.patient_id }}</td>
+                <td>{{ appt.doctor_id }}</td>
+                <td>{{ doctor_department_map.get(appt.doctor_id, "N/A") }}</td>
+                <td>
+                    <a href="{{ url_for('admin_api.patient_history',patient_id=appt.patient_id)}}">View</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <h1>Cancelled Appointments</h1>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Appointment ID</th>
+                <th>Patient ID</th>
+                <th>Doctor ID</th>
+                <th>Department</th>
+                <th>Patient History</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for appt in cancelled %}
+            <tr>
+                <td>{{ appt.appointment_id }}</td>
+                <td>{{ appt.patient_id }}</td>
+                <td>{{ appt.doctor_id }}</td>
+                <td>{{ doctor_department_map.get(appt.doctor_id, "N/A") }}</td>
+                <td>
+                    <a href="{{ url_for('admin_api.patient_history',patient_id=appt.patient_id)}}">View</a>
                 </td>
             </tr>
         {% endfor %}

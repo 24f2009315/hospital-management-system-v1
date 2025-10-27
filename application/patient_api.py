@@ -1,5 +1,5 @@
 from flask import Flask,Blueprint,render_template,request,flash,redirect,url_for
-from application.models import Patient , Appointment , Doctor ,db,Department
+from application.models import Patient , Appointment , Doctor ,db,Department,Treatment
 from datetime import datetime, time as time_class
 
 api=Blueprint("patient_api",__name__)
@@ -8,11 +8,14 @@ api=Blueprint("patient_api",__name__)
 def patient_dashboard():
     current_patient = Patient.query.first()  # replace with current_user later
     # Fetch appointments for this patient
-    appointments = Appointment.query.filter_by(patient_id=current_patient.patient_id).all()
-    all_departments = Department.query.filter_by(department_name=Department.department_name).first()
+    booked = Appointment.query.filter_by(patient_id=current_patient.patient_id, status="Booked").all()
+    completed = Appointment.query.filter_by(patient_id=current_patient.patient_id, status="Completed").all()
+    cancelled = Appointment.query.filter_by(patient_id=current_patient.patient_id, status="Cancelled").all()
+
+    all_departments = Department.query.all()
     doctor_department_map={doc.doctor_id: doc.department for doc in Doctor.query.all()}
     
-    return render_template("patient/patient_dashboard.html",name=current_patient.name,appointments=appointments,doctor_department_map=doctor_department_map,all_departments=all_departments)
+    return render_template("patient/patient_dashboard.html",name=current_patient.name,patient_id=current_patient.patient_id,booked=booked,completed=completed,cancelled=cancelled,doctor_department_map=doctor_department_map,all_departments=all_departments)
 
 @api.route("/book_appointment", methods=["GET","POST"])
 def book_appointment():
@@ -52,3 +55,38 @@ def book_appointment():
         db.session.commit()
         flash("Appointment booked successfully", category='alert-success')
         return redirect(url_for('patient_api.patient_dashboard'))
+
+@api.route("/patient_dashboard/search",methods=["GET","POST"])
+def search_users():
+    query = request.form.get("query","").strip()
+    doctors = []
+    if query:
+        doctors = Doctor.query.filter(
+            (Doctor.name.ilike(f'%{query}%')) |
+            (Doctor.department.ilike(f'%{query}%'))
+        ).all()
+    return render_template("patient/patient_search.html",doctors = doctors)
+
+@api.route("/patient_dashboard/patient_history/<int:patient_id>")
+def patient_history(patient_id):
+    patient = Patient.query.filter_by(patient_id=patient_id).first()
+    if not patient:
+        flash("Patient not found", category='error')
+        return redirect(url_for('patient_api.patient_dashboard'))
+
+    # Get all appointments for this patient
+    appointments = Appointment.query.filter_by(patient_id=patient_id).all()
+
+    # Get all treatments linked to these appointments
+    treatments = Treatment.query.filter(Treatment.appointment_id.in_([appt.appointment_id for appt in appointments])).all()
+
+    return render_template("patient/patient_history.html",patient=patient,treatments=treatments)
+
+@api.route("/patient_dashboard/mark_cancelled/<int:appointment_id>")
+def mark_cancelled(appointment_id):
+    appointment = Appointment.query.get(appointment_id)
+    if appointment:
+        appointment.status = "Cancelled"
+        db.session.commit()
+        flash("Appointment cancelled", "warning")
+    return redirect(url_for("patient_api.patient_dashboard"))

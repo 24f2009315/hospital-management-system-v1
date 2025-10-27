@@ -7,18 +7,20 @@ api=Blueprint("doctor_api",__name__)
 def doctor_dashboard():
     if request.method == "GET":
         current_doctor=Doctor.query.first()
-        appointments = Appointment.query.filter_by(doctor_id=current_doctor.doctor_id).all()
+        booked = Appointment.query.filter_by(doctor_id=current_doctor.doctor_id, status="Booked").all()
+        completed = Appointment.query.filter_by(doctor_id=current_doctor.doctor_id, status="Completed").all()
+        cancelled = Appointment.query.filter_by(doctor_id=current_doctor.doctor_id, status="Cancelled").all()
+
         patient_map = {p.patient_id: p.name for p in Patient.query.all()}
-        return render_template("doctor/doctor_dashboard.html",name=current_doctor.name,appointments=appointments,patient_map=patient_map)
+        return render_template("doctor/doctor_dashboard.html",name=current_doctor.name,booked=booked,completed=completed,cancelled=cancelled,patient_map=patient_map)
 
 @api.route("/doctor_dashboard/mark_completed/<int:appointment_id>")
 def mark_completed(appointment_id):
     appointment = Appointment.query.get(appointment_id)
     if appointment:
         appointment.status = "Completed"
-        db.session.delete(appointment)
-    db.session.commit()
-    flash("Appointment marked as completed", "success")
+        db.session.commit()
+        flash("Appointment marked as completed", "success")
     return redirect(url_for("doctor_api.doctor_dashboard"))
 
 @api.route("/doctor_dashboard/mark_cancelled/<int:appointment_id>")
@@ -26,9 +28,8 @@ def mark_cancelled(appointment_id):
     appointment = Appointment.query.get(appointment_id)
     if appointment:
         appointment.status = "Cancelled"
-        db.session.delete(appointment)
-    db.session.commit()
-    flash("Appointment cancelled", "warning")
+        db.session.commit()
+        flash("Appointment cancelled", "warning")
     return redirect(url_for("doctor_api.doctor_dashboard"))
 
 @api.route("/doctor_dashboard/update_history/<int:patient_id>", methods=["GET","POST"])
@@ -45,7 +46,7 @@ def update_history(patient_id):
         doctor = Doctor.query.filter_by(doctor_id=appointment.doctor_id).first()
 
     if request.method == "GET":
-        department = Department.query.filter_by(department_id=doctor.department).first() if doctor else None
+        department = Department.query.filter_by(department_name=doctor.department).first() if doctor else None
         return render_template("doctor/update_history.html", patient=patient, department=department)
 
     # POST - update patient history

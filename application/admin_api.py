@@ -9,10 +9,13 @@ def admin_dashboard():
     if request.method == "GET":
         all_doctors = Doctor.query.all()
         all_patients = Patient.query.all()
-        appointments = Appointment.query.all()
+        booked = Appointment.query.filter_by(status="Booked").all()
+        completed = Appointment.query.filter_by(status="Completed").all()
+        cancelled = Appointment.query.filter_by(status="Cancelled").all()
+
         # Build doctor_id -> department map
         doctor_department_map = {doc.doctor_id: doc.department for doc in Doctor.query.all()}
-        return render_template("admin/admin_dashboard.html",doctors = all_doctors,patients = all_patients,appointments=appointments,doctor_department_map=doctor_department_map)
+        return render_template("admin/admin_dashboard.html",doctors = all_doctors,patients = all_patients,booked=booked,completed=completed,cancelled=cancelled,doctor_department_map=doctor_department_map)
     
 @api.route("/add_doctors",methods=["GET","POST"])
 def add_doctors():
@@ -111,7 +114,7 @@ def search_users():
     if query:
         doctors = Doctor.query.filter(
             (Doctor.name.ilike(f'%{query}%')) |
-            (Doctor.specialization.ilike(f'%{query}%'))
+            (Doctor.department.ilike(f'%{query}%'))
         ).all()
 
         patients = Patient.query.filter(
@@ -119,3 +122,18 @@ def search_users():
             (Patient.contact.ilike(f'%{query}%'))
         ).all()
     return render_template("admin/admin_search.html",doctors = doctors,patients=patients)
+
+@api.route("/admin_dashboard/patient_history/<int:patient_id>")
+def patient_history(patient_id):
+    patient = Patient.query.filter_by(patient_id=patient_id).first()
+    if not patient:
+        flash("Patient not found", category='error')
+        return redirect(url_for('admin_api.admin_dashboard'))
+
+    # Get all appointments for this patient
+    appointments = Appointment.query.filter_by(patient_id=patient_id).all()
+
+    # Get all treatments linked to these appointments
+    treatments = Treatment.query.filter(Treatment.appointment_id.in_([appt.appointment_id for appt in appointments])).all()
+
+    return render_template("admin/admin_history.html",patient=patient,treatments=treatments)

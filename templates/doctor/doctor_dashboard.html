@@ -14,10 +14,10 @@
       </tr>
     </thead>
     <tbody>
-    {% for appt in appointments %}
+    {% for appt in booked %}
       <tr>
         <td>{{ appt.appointment_id }}</td>
-        <td>{{ appt.patient_id }}</td>
+        <td>{{ patient_map.get(appt.patient_id, 'Unknown') }}</td>
         <td>
           <a href="{{ url_for('doctor_api.update_history',patient_id=appt.patient_id) }}">Update</a>
         </td>
@@ -29,10 +29,33 @@
     {% endfor %}
     </tbody>
   </table>
+  <h3>Completed Appointments</h3>
+<table class="table table-success">
+  <tbody>
+    {% for appt in completed %}
+      <tr>
+        <td>{{ appt.appointment_id }}</td>
+        <td>{{ patient_map.get(appt.patient_id, 'Unknown') }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h3>Cancelled Appointments</h3>
+<table class="table table-warning">
+  <tbody>
+    {% for appt in cancelled %}
+      <tr>
+        <td>{{ appt.appointment_id }}</td>
+        <td>{{ patient_map.get(appt.patient_id, 'Unknown') }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
   <h4>Assigned Patients</h4>
-  {% if appointments %}
+  {% if booked %}
     <ul class="list-group mt-3">
-      {% for appt in appointments %}
+      {% for appt in booked %}
         <li class="list-group-item">
           <span>{{ patient_map.get(appt.patient_id,"unknown") }}</span>
           <a href="{{ url_for('doctor_api.patient_history',patient_id=appt.patient_id)}}">View</a>

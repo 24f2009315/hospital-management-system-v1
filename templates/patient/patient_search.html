@@ -1,4 +1,4 @@
-{% extends 'admin/layout.html' %}
+{% extends 'patient/layout.html' %}
 
 {% block body %}
 <div class="container mt-4">
@@ -14,16 +14,6 @@
             {% endfor %}
         </ul>
     </div>
-
-    <div class="card">
-        <div class="card-header">Patients</div>
-        <ul class="list-group list-group-flush">
-            {% for patient in patients %}
-                <li class="list-group-item">{{ patient.name }} - {{ patient.contact }} (ID: {{ patient.id }})</li>
-            {% else %}
-                <li class="list-group-item">No patients found</li>
-            {% endfor %}
-        </ul>
-    </div>
+    <a href="{{ url_for('patient_api.patient_dashboard')}}">Go Back</a>
 </div>
 {% endblock %}
