@@ -1,0 +1,35 @@
+{% extends "doctor/layout.html" %}
+{% block body %}
+<div class="container mt-4">
+    <h2>Update Availability</h2>
+    <p>Hello, Dr. {{ doctor.name }}</p>
+
+    <form method="POST">
+        <table class="table table-bordered" style="max-width:600px;">
+            <thead class="table-light">
+                <tr>
+                    <th>Date</th>
+                    <th>Available?</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for d in dates %}
+                    {% set date_str = d.strftime('%Y-%m-%d') %}
+                    <tr>
+                        <td>{{ d.strftime('%A, %d %B %Y') }}</td>
+                        <td class="text-center">
+                            <input type="checkbox"
+                                   name="available_dates"
+                                   value="{{ date_str }}"
+                                   {% if date_str in available %}checked{% endif %}>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <button type="submit" class="btn btn-primary">Save Availability</button>
+        <a href="{{ url_for('doctor_api.doctor_dashboard') }}" class="btn btn-secondary">Back</a>
+    </form>
+</div>
+{% endblock %}

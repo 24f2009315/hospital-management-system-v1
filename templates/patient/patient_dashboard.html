@@ -3,21 +3,36 @@
   <div class="container-fluid">
     <h2>Welcome, {{ name }}</h2>
   </div>
-  <h4>Departments</h4>
-  {% if all_departments %}
-    <ul class="list-group mt-3">
-      {% for dept in all_departments %}
-        <li class="list-group-item">
-          <span>{{ dept.department_name }}</span>
-          <a href="#">View</a>
-        </li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p class="mt-3">No Departments</p>
-  {% endif %}
   <a href="{{ url_for('patient_api.book_appointment') }}">Book an Appointment</a>
   <a href="{{ url_for('patient_api.patient_history',patient_id=patient_id) }}">View History</a>
+  <h4 class="mt-4">All Doctors</h4>
+{% if all_doctors %}
+  <table class="table table-bordered mt-3">
+    <thead class="table-light">
+      <tr>
+        <th>Doctor ID</th>
+        <th>Name</th>
+        <th>Username</th>
+        <th>Department</th>
+        <th>Availability</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for doc in all_doctors %}
+        <tr>
+          <td>{{ doc.doctor_id }}</td>
+          <td>{{ doc.name }}</td>
+          <td>{{ doc.username }}</td>
+          <td>{{ doc.department }}</td>
+          <td><a href="{{ url_for('patient_api.check_availability',doctor_id=doc.doctor_id)}}">View Availability</a></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p>No doctors available</p>
+{% endif %}
+
   <h4>Booked Appointments</h4>
   {% if booked %}
   <table class="table table-striped">

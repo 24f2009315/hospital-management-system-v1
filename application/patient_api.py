@@ -7,17 +7,31 @@ api=Blueprint("patient_api",__name__)
 @api.route("/patient_dashboard", methods=["GET", "POST"])
 def patient_dashboard():
     current_patient = Patient.query.first()  # replace with current_user later
-    # Fetch appointments for this patient
+
     booked = Appointment.query.filter_by(patient_id=current_patient.patient_id, status="Booked").all()
     completed = Appointment.query.filter_by(patient_id=current_patient.patient_id, status="Completed").all()
     cancelled = Appointment.query.filter_by(patient_id=current_patient.patient_id, status="Cancelled").all()
 
     all_departments = Department.query.all()
-    doctor_department_map={doc.doctor_id: doc.department for doc in Doctor.query.all()}
-    
-    return render_template("patient/patient_dashboard.html",name=current_patient.name,patient_id=current_patient.patient_id,booked=booked,completed=completed,cancelled=cancelled,doctor_department_map=doctor_department_map,all_departments=all_departments)
+    all_doctors=Doctor.query.all()
 
-@api.route("/book_appointment", methods=["GET","POST"])
+    doctor_department_map = {doc.doctor_id: doc.department for doc in Doctor.query.all()}
+
+    return render_template(
+        "patient/patient_dashboard.html",
+        name=current_patient.name,
+        patient_id=current_patient.patient_id,
+        booked=booked,
+        completed=completed,
+        cancelled=cancelled,
+        doctor_department_map=doctor_department_map,
+        all_departments=all_departments,
+        all_doctors=all_doctors
+    )
+
+from datetime import datetime
+
+@api.route("/book_appointment", methods=["GET", "POST"])
 def book_appointment():
     if request.method == "GET":
         doctors = Doctor.query.all()
@@ -30,9 +44,19 @@ def book_appointment():
 
         appointment_date = datetime.strptime(date_str, "%Y-%m-%d").date()
         appointment_time = datetime.strptime(time_str, "%H:%M").time()
-        current_patient = Patient.query.first()
+        selected_date_str = appointment_date.strftime("%Y-%m-%d")
 
-        # Prevent double booking
+        current_patient = Patient.query.first()
+        doctor = Doctor.query.filter_by(doctor_id=doctor_id).first()
+
+        # ✅ FIXED: check using actual date strings
+        available_dates = doctor.availability.split(",") if doctor and doctor.availability else []
+        if selected_date_str not in available_dates:
+            flash(f"Dr. {doctor.name} is not available on {selected_date_str}. Please select another date.", "alert-danger")
+            doctors = Doctor.query.all()
+            return render_template("patient/book_appointment.html", doctors=doctors)
+
+        # 🕐 Prevent double booking
         existing_appointment = Appointment.query.filter_by(
             doctor_id=doctor_id,
             date=appointment_date,
@@ -40,10 +64,10 @@ def book_appointment():
         ).first()
         if existing_appointment:
             flash("Doctor already booked at this slot", category="warning")
-            doctors=Doctor.query.all()
-            return render_template("patient/book_appointment.html",doctors=doctors)
+            doctors = Doctor.query.all()
+            return render_template("patient/book_appointment.html", doctors=doctors)
 
-        # Create appointment
+        # ✅ Create appointment
         new_appointment = Appointment(
             patient_id=current_patient.patient_id,
             doctor_id=int(doctor_id),
@@ -53,7 +77,8 @@ def book_appointment():
         )
         db.session.add(new_appointment)
         db.session.commit()
-        flash("Appointment booked successfully", category='alert-success')
+
+        flash("Appointment booked successfully!", category='alert-success')
         return redirect(url_for('patient_api.patient_dashboard'))
 
 @api.route("/patient_dashboard/search",methods=["GET","POST"])
@@ -90,3 +115,21 @@ def mark_cancelled(appointment_id):
         db.session.commit()
         flash("Appointment cancelled", "warning")
     return redirect(url_for("patient_api.patient_dashboard"))
+
+@api.route("/check_availability/<int:doctor_id>")
+def check_availability(doctor_id):
+    doctor = Doctor.query.filter_by(doctor_id=doctor_id).first()
+
+    if not doctor:
+        flash("Doctor not found.", category="alert-danger")
+        return redirect(url_for("patient_api.patient_dashboard"))
+
+    available_days=[]
+    if doctor.availability:
+        available_days = doctor.availability.split(",")
+    
+    return render_template(
+        "patient/check_availability.html",
+        doctor=doctor,
+        available_days=available_days
+    )

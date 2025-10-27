@@ -4,6 +4,7 @@
     <h2>Welcome, Dr. {{ name }}</h2>
   </div>
   <h4>Upcoming Appointments</h4>
+  <a href="{{ url_for('doctor_api.update_availability',doctor_id=doctor.doctor_id)}}">Update Availability</a>
   <table class="table table-striped">
     <thead>
       <tr>

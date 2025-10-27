@@ -16,11 +16,11 @@
         </div>
         <div class="mb-3">
             <label for="formGroupExampleInput2" class="form-label">Department of the doctor</label>
-            <select name="department" id="department" required>
+            <select name="department" id="department" class="form-select" required>
                 <option value="" disabled selected>Select Department</option>
-                <option value="Cardiology">Cardiology</option>
-                <option value="Neurology">Neurology</option>
-                <option value="Pediatrics">Pediatrics</option>
+                {% for dept in all_departments %}
+                    <option value="{{ dept.department_name }}">{{ dept.department_name }}</option>
+                {% endfor %}
             </select>
         </div>
         <button type="submit" class="btn btn-outline-dark">Add</button>

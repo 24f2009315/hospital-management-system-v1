@@ -1,5 +1,6 @@
 from flask import Flask,Blueprint,render_template,request,flash,redirect,url_for
 from application.models import Doctor,db,Appointment,Patient,User,Department,Treatment
+from datetime import datetime,timedelta
 
 api=Blueprint("doctor_api",__name__)
 
@@ -12,7 +13,7 @@ def doctor_dashboard():
         cancelled = Appointment.query.filter_by(doctor_id=current_doctor.doctor_id, status="Cancelled").all()
 
         patient_map = {p.patient_id: p.name for p in Patient.query.all()}
-        return render_template("doctor/doctor_dashboard.html",name=current_doctor.name,booked=booked,completed=completed,cancelled=cancelled,patient_map=patient_map)
+        return render_template("doctor/doctor_dashboard.html",doctor=current_doctor,name=current_doctor.name,booked=booked,completed=completed,cancelled=cancelled,patient_map=patient_map)
 
 @api.route("/doctor_dashboard/mark_completed/<int:appointment_id>")
 def mark_completed(appointment_id):
@@ -87,3 +88,40 @@ def patient_history(patient_id):
     treatments = Treatment.query.filter(Treatment.appointment_id.in_([appt.appointment_id for appt in appointments])).all()
 
     return render_template("doctor/patient_history.html",patient=patient,treatments=treatments)
+
+from datetime import datetime, timedelta
+from flask import session
+
+# We'll store the data in Flask's session per doctor temporarily
+from datetime import datetime, timedelta
+
+@api.route("/update_availability/<int:doctor_id>", methods=["GET", "POST"])
+def update_availability(doctor_id):
+    doctor = Doctor.query.filter_by(doctor_id=doctor_id).first()
+
+    if not doctor:
+        flash("Doctor not found.", category="alert-danger")
+        return redirect(url_for("doctor_api.doctor_dashboard"))
+
+    # ✅ Generate next 7 calendar dates
+    today = datetime.today().date()
+    next_7_days = [(today + timedelta(days=i)) for i in range(7)]
+
+    if request.method == "POST":
+        # Get all checked dates from the form
+        selected_dates = request.form.getlist("available_dates")
+        doctor.availability = ",".join(selected_dates)
+        db.session.commit()
+        flash("Availability updated successfully!", "alert-success")
+        return redirect(url_for("doctor_api.doctor_dashboard"))
+
+    # Split stored availability to highlight checked ones
+    available_dates = doctor.availability.split(",") if doctor.availability else []
+
+    # ✅ Send all required data to template
+    return render_template(
+        "doctor/update_availability.html",
+        doctor=doctor,
+        dates=next_7_days,
+        available=available_dates
+    )

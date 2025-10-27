@@ -19,9 +19,11 @@ class Doctor(db.Model):
 
     id=db.Column(db.Integer(),primary_key=True,autoincrement=True)
     doctor_id = db.Column(db.Integer(),db.ForeignKey('user.user_id'),nullable=False)
-    name = db.Column(db.String(),nullable=False)
-    username = db.Column(db.String(),nullable=False)
-    department=db.Column(db.String(),nullable=False)
+    name = db.Column(db.String(100),nullable=False)
+    username = db.Column(db.String(100),nullable=False)
+    department = db.Column(db.String(100),db.ForeignKey("department.department_name"),nullable=False)
+    availability = db.Column(db.String(200), nullable=True)
+    appointments = db.relationship("Appointment", backref="doctor", cascade="all, delete-orphan")
 
 class Patient(db.Model):
     __tablename__ = "patient"
@@ -42,7 +44,7 @@ class Appointment(db.Model):
 
     appointment_id = db.Column(db.Integer(),primary_key=True,autoincrement=True)
     patient_id = db.Column(db.Integer() , db.ForeignKey("patient.patient_id") ,nullable=False)
-    doctor_id = db.Column(db.Integer() , db.ForeignKey("doctor.doctor_id"),nullable=True)
+    doctor_id = db.Column(db.Integer() , db.ForeignKey("doctor.id"),nullable=True)
     date = db.Column(db.Date(),nullable = False)
     time = db.Column(db.Time(),nullable = False)
     status = db.Column(db.String(),nullable = False , default="Booked")
@@ -60,7 +62,6 @@ class Department(db.Model):
     __tablename__ = "department"
 
     id = db.Column(db.Integer(),primary_key = True,autoincrement=True)
-    department_id = db.Column(db.Integer(),nullable=False)
     department_name = db.Column(db.String(),nullable = False,unique=True)
     description = db.Column(db.String(),nullable = False)
-    doctors_registered = db.Column(db.String())
+    doctors = db.relationship("Doctor", backref="department_obj", lazy=True)

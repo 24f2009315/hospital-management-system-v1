@@ -1,5 +1,5 @@
 from flask import Flask , Blueprint , request , render_template ,flash,redirect,url_for
-from application.models import User , db ,Doctor,Patient,Appointment,Treatment
+from application.models import User , db ,Doctor,Patient,Appointment,Treatment,Department
 from werkzeug.security import check_password_hash , generate_password_hash
 
 api = Blueprint("admin_api",__name__)
@@ -20,7 +20,8 @@ def admin_dashboard():
 @api.route("/add_doctors",methods=["GET","POST"])
 def add_doctors():
     if request.method == "GET":
-        return render_template("admin/add_doctors.html")
+        all_departments=Department.query.all()
+        return render_template("admin/add_doctors.html",all_departments=all_departments)
     
     if request.method == "POST":
         name = request.form.get("name")
@@ -49,10 +50,10 @@ def delete_doctor(id):
 
     if one_doctor:
 
-        linked_user = User.query.get(one_doctor.user_id)
+        linked_user = User.query.get(one_doctor.doctor_id)
         if linked_user:
             db.session.delete(linked_user)
-
+        Appointment.query.filter_by(doctor_id=one_doctor.doctor_id).delete()
         db.session.delete(one_doctor)
         db.session.commit()
 

@@ -1,0 +1,35 @@
+{% extends "patient/layout.html" %}
+{% block body %}
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h3 class="card-title text-primary">Dr. {{ doctor.name }}</h3>
+            <h5 class="text-muted mb-3">{{ doctor.department }}</h5>
+
+            <h4 class="mb-3">Weekly Availability</h4>
+
+            {% if available_days %}
+                <ul class="list-group" style="max-width:400px;">
+                    {% for day in available_days %}
+                        <li class="list-group-item d-flex align-items-center">
+                            <i class="bi bi-check-circle-fill text-success me-2"></i>
+                            <span class="fw-bold">{{ day }}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="mt-3 text-muted">
+                    <i class="bi bi-exclamation-circle"></i>
+                    Doctor has not updated their availability yet.
+                </p>
+            {% endif %}
+
+            <div class="mt-4">
+                <a href="{{ url_for('patient_api.patient_dashboard') }}" class="btn btn-secondary">
+                    ← Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
