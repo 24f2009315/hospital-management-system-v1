@@ -1,10 +1,11 @@
-from flask import Flask , Blueprint
+from flask import Flask , Blueprint , jsonify , request
 from application.models import db,User,Department
 from werkzeug.security import generate_password_hash
 from application.auth import api as auth_api
 from application.admin_api import api as admin_api
 from application.doctor_api import api as doctor_api
 from application.patient_api import api as patient_api
+from application.appointment_api import api as appointment_api
 
 def create_app():
     app=Flask(__name__)
@@ -30,6 +31,7 @@ def create_app():
     app.register_blueprint(admin_api)
     app.register_blueprint(doctor_api)
     app.register_blueprint(patient_api)
+    app.register_blueprint(appointment_api)
     return app
 
 app=create_app()

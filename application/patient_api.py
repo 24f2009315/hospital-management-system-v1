@@ -1,5 +1,5 @@
-from flask import Flask,Blueprint,render_template,request,flash,redirect,url_for
-from application.models import Patient , Appointment , Doctor ,db,Department,Treatment
+from flask import Flask,Blueprint,render_template,request,flash,redirect,url_for,jsonify,request
+from application.models import Patient , Appointment , Doctor ,db,Department,Treatment,User
 from datetime import datetime, time as time_class
 from sqlalchemy import or_
 
@@ -206,3 +206,76 @@ def reschedule_appointment(appointment_id):
 
     # GET -> render form
     return render_template("patient/reschedule.html", appointment=appointment, doctor=doctor)
+
+
+
+# ✅ GET all patients
+@api.route('/api/patients', methods=['GET'])
+def get_patients():
+    patients = Patient.query.all()
+    patient_list = []
+    for p in patients:
+        patient_list.append({
+            "id": p.id,
+            "name": p.name,
+            "username": p.username,
+            "age": p.age,
+            "gender": p.gender,
+            "contact": p.contact,
+            "address": p.address
+        })
+    return jsonify(patient_list)
+
+
+# ✅ POST - Add a new patient
+@api.route('/api/patients', methods=['POST'])
+def add_patient():
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "No data provided"}), 400
+
+    new_patient = Patient(
+        patient_id=data.get("patient_id"),
+        name=data.get("name"),
+        username=data.get("username"),
+        age=data.get("age"),
+        gender=data.get("gender"),
+        contact=data.get("contact"),
+        address=data.get("address")
+    )
+    db.session.add(new_patient)
+    db.session.commit()
+    return jsonify({"message": "Patient added successfully"}), 201
+
+
+# ✅ PUT - Update patient info
+@api.route('/api/patients/<int:id>', methods=['PUT'])
+def update_patient(id):
+    patient = Patient.query.get(id)
+    if not patient:
+        return jsonify({"error": "Patient not found"}), 404
+
+    data = request.get_json()
+    patient.name = data.get("name", patient.name)
+    patient.age = data.get("age", patient.age)
+    patient.gender = data.get("gender", patient.gender)
+    patient.contact = data.get("contact", patient.contact)
+    patient.address = data.get("address", patient.address)
+    user = User.query.get(patient.patient_id)
+    if user and "username" in data:
+        user.username = data["username"]
+
+    db.session.commit()
+    return jsonify({"message": "Patient updated successfully"})
+
+
+# ✅ DELETE - Remove a patient
+@api.route('/api/patients/<int:id>', methods=['DELETE'])
+def delete_patient(id):
+    patient = Patient.query.get(id)
+    if not patient:
+        return jsonify({"error": "Patient not found"}), 404
+
+    db.session.delete(patient)
+    db.session.commit()
+    return jsonify({"message": "Patient deleted successfully"})

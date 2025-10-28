@@ -1,4 +1,4 @@
-from flask import Flask,Blueprint,render_template,request,flash,redirect,url_for
+from flask import Flask,Blueprint,render_template,request,flash,redirect,url_for,jsonify,request,session
 from application.models import Doctor,db,Appointment,Patient,User,Department,Treatment
 from datetime import datetime,timedelta
 
@@ -89,12 +89,6 @@ def patient_history(patient_id):
 
     return render_template("doctor/patient_history.html",patient=patient,treatments=treatments)
 
-from datetime import datetime, timedelta
-from flask import session
-
-# We'll store the data in Flask's session per doctor temporarily
-from datetime import datetime, timedelta
-
 @api.route("/update_availability/<int:doctor_id>", methods=["GET", "POST"])
 def update_availability(doctor_id):
     doctor = Doctor.query.filter_by(doctor_id=doctor_id).first()
@@ -125,3 +119,68 @@ def update_availability(doctor_id):
         dates=next_7_days,
         available=available_dates
     )
+
+
+
+# ================================
+# ✅ JSON API SECTION (for milestone)
+# ================================
+
+@api.route("/api/doctors", methods=["GET"])
+def get_doctors_json():
+    doctors = Doctor.query.all()
+    doctor_list = []
+    for d in doctors:
+        doctor_list.append({
+            "id": d.id,
+            "name": d.name,
+            "username": d.username,
+            "department": d.department,
+            "availability": d.availability
+        })
+    return jsonify(doctor_list)
+
+
+@api.route("/api/doctors", methods=["POST"])
+def add_doctor_json():
+    data = request.get_json()
+    new_doctor = Doctor(
+        doctor_id=data.get("doctor_id"),
+        name=data.get("name"),
+        username=data.get("username"),
+        department=data.get("department"),
+        availability=data.get("availability")
+    )
+    db.session.add(new_doctor)
+    db.session.commit()
+    return jsonify({"message": "Doctor added successfully"}), 201
+
+
+@api.route("/api/doctors/<int:id>", methods=["PUT"])
+def update_doctor_json(id):
+    doctor = Doctor.query.get(id)
+    if not doctor:
+        return jsonify({"error": "Doctor not found"}), 404
+
+    data = request.get_json()
+    doctor.name = data.get("name", doctor.name)
+    doctor.department = data.get("department", doctor.department)
+    doctor.availability = data.get("availability", doctor.availability)
+    doctor.username = data.get("username", doctor.username)
+
+    user = User.query.get(doctor.doctor_id)
+    if user and "username" in data:
+        user.username = data["username"]
+    db.session.commit()
+    return jsonify({"message": "Doctor updated successfully"})
+
+
+@api.route("/api/doctors/<int:id>", methods=["DELETE"])
+def delete_doctor_json(id):
+    doctor = Doctor.query.get(id)
+    if not doctor:
+        return jsonify({"error": "Doctor not found"}), 404
+
+    db.session.delete(doctor)
+    db.session.commit()
+    return jsonify({"message": "Doctor deleted successfully"})
