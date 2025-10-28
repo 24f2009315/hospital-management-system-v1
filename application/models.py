@@ -11,6 +11,8 @@ class User(db.Model,UserMixin):
     username = db.Column(db.String(),nullable=False)
     password = db.Column(db.String(),nullable=False)
     role = db.Column(db.String(),nullable=False)
+    def get_id(self):
+        return str(self.user_id)
 
     doctor = db.relationship("Doctor",backref="user",uselist=False,cascade="all, delete")
     patient = db.relationship("Patient",backref="user",uselist=False,cascade="all, delete")
