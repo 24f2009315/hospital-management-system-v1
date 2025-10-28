@@ -13,9 +13,28 @@ def admin_dashboard():
         completed = Appointment.query.filter_by(status="Completed").all()
         cancelled = Appointment.query.filter_by(status="Cancelled").all()
 
+        total_doctors = len(all_doctors)
+        total_patients = len(all_patients)
+        total_appointments = len(booked) + len(completed) + len(cancelled)
+        appointment_status = {
+            "Booked": len(booked),
+            "Completed": len(completed),
+            "Cancelled": len(cancelled)
+        }
+
         # Build doctor_id -> department map
         doctor_department_map = {doc.doctor_id: doc.department for doc in Doctor.query.all()}
-        return render_template("admin/admin_dashboard.html",doctors = all_doctors,patients = all_patients,booked=booked,completed=completed,cancelled=cancelled,doctor_department_map=doctor_department_map)
+        return render_template("admin/admin_dashboard.html",
+            doctors = all_doctors,
+            patients = all_patients,
+            booked=booked,
+            completed=completed,
+            cancelled=cancelled,
+            doctor_department_map=doctor_department_map,
+            total_doctors=total_doctors,
+            total_patients=total_patients,
+            total_appointments=total_appointments,
+            appointment_status=appointment_status)
     
 @api.route("/add_doctors",methods=["GET","POST"])
 def add_doctors():

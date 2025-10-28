@@ -13,7 +13,20 @@ def doctor_dashboard():
         cancelled = Appointment.query.filter_by(doctor_id=current_doctor.doctor_id, status="Cancelled").all()
 
         patient_map = {p.patient_id: p.name for p in Patient.query.all()}
-        return render_template("doctor/doctor_dashboard.html",doctor=current_doctor,name=current_doctor.name,booked=booked,completed=completed,cancelled=cancelled,patient_map=patient_map)
+        appointment_status = {
+            "Booked": len(booked),
+            "Completed": len(completed),
+            "Cancelled": len(cancelled)
+        }
+
+        return render_template("doctor/doctor_dashboard.html",
+            doctor=current_doctor,
+            name=current_doctor.name,
+            booked=booked,
+            completed=completed,
+            cancelled=cancelled,
+            patient_map=patient_map,
+            appointment_status=appointment_status)
 
 @api.route("/doctor_dashboard/mark_completed/<int:appointment_id>")
 def mark_completed(appointment_id):
