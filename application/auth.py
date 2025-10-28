@@ -1,4 +1,5 @@
 from flask import Flask , Blueprint , request , render_template ,flash,redirect,url_for
+from flask_login import login_user, logout_user, login_required, current_user
 from application.models import User , db ,Patient
 from werkzeug.security import check_password_hash , generate_password_hash
 
@@ -12,11 +13,17 @@ def login():
     username = request.form.get("username")
     password = request.form.get("password")
 
+    if not username or not password:
+        flash("Please enter both username and password!", category="warning")
+        return render_template("login.html")
+    
     user = User.query.filter_by(username = username).first()
     if not user or not check_password_hash(user.password , password):
         flash("Invalid user",category="invalid-email")
         return render_template("login.html")
-    
+    login_user(user)
+    flash("Login successful!", "success")
+
     if user.role == "patient":
         return redirect(url_for("patient_api.patient_dashboard"))
     elif user.role == "doctor":
@@ -60,3 +67,10 @@ def signup():
 
     flash("Signup successful",category="success")
     return render_template("login.html")
+
+@api.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    flash("You have been logged out.", "info")
+    return redirect(url_for("auth.login"))

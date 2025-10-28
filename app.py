@@ -1,4 +1,5 @@
 from flask import Flask , Blueprint , jsonify , request
+from flask_login import LoginManager
 from application.models import db,User,Department
 from werkzeug.security import generate_password_hash
 from application.auth import api as auth_api
@@ -6,6 +7,9 @@ from application.admin_api import api as admin_api
 from application.doctor_api import api as doctor_api
 from application.patient_api import api as patient_api
 from application.appointment_api import api as appointment_api
+
+login_manager = LoginManager()
+login_manager.login_view = "auth.login"
 
 def create_app():
     app=Flask(__name__)
@@ -27,6 +31,11 @@ def create_app():
             ]
             db.session.add_all(default_departments)
             db.session.commit()
+    login_manager.init_app(app)
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
+
     app.register_blueprint(auth_api)
     app.register_blueprint(admin_api)
     app.register_blueprint(doctor_api)

@@ -1,11 +1,16 @@
 from flask import Flask,Blueprint,render_template,request,flash,redirect,url_for,jsonify,request,session
+from flask_login import login_required,current_user
 from application.models import Doctor,db,Appointment,Patient,User,Department,Treatment
 from datetime import datetime,timedelta
 
 api=Blueprint("doctor_api",__name__)
 
 @api.route("/doctor_dashboard",methods = ["GET","POST"])
+@login_required
 def doctor_dashboard():
+    if current_user.role != "doctor":
+        flash("Access Denied","danger")
+        return redirect(url_for('auth.login'))
     if request.method == "GET":
         current_doctor=Doctor.query.first()
         booked = Appointment.query.filter_by(doctor_id=current_doctor.doctor_id, status="Booked").all()

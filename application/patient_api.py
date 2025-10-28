@@ -1,4 +1,5 @@
 from flask import Flask,Blueprint,render_template,request,flash,redirect,url_for,jsonify,request
+from flask_login import login_required,current_user
 from application.models import Patient , Appointment , Doctor ,db,Department,Treatment,User
 from datetime import datetime, time as time_class
 from sqlalchemy import or_
@@ -6,7 +7,11 @@ from sqlalchemy import or_
 api=Blueprint("patient_api",__name__)
 
 @api.route("/patient_dashboard", methods=["GET", "POST"])
+@login_required
 def patient_dashboard():
+    if current_user.role != "patient":
+        flash("Access Denied","danger")
+        return redirect(url_for('auth.login'))
     current_patient = Patient.query.first()  # replace with current_user later
     db.session.expire_all()
     booked = Appointment.query.filter_by(patient_id=current_patient.patient_id, status="Booked").all()

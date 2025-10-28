@@ -1,11 +1,16 @@
 from flask import Flask , Blueprint , request , render_template ,flash,redirect,url_for
+from flask_login import login_required, current_user
 from application.models import User , db ,Doctor,Patient,Appointment,Treatment,Department
 from werkzeug.security import check_password_hash , generate_password_hash
 
 api = Blueprint("admin_api",__name__)
 
 @api.route("/admin_dashboard",methods=["GET","POST"])
+@login_required
 def admin_dashboard():
+    if current_user.role != "admin":
+        flash("Access Denied","danger")
+        return redirect(url_for('auth.login'))
     if request.method == "GET":
         all_doctors = Doctor.query.all()
         all_patients = Patient.query.all()
