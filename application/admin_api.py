@@ -42,6 +42,7 @@ def admin_dashboard():
             appointment_status=appointment_status)
     
 @api.route("/add_doctors",methods=["GET","POST"])
+@login_required
 def add_doctors():
     if request.method == "GET":
         all_departments=Department.query.all()
@@ -69,6 +70,7 @@ def add_doctors():
     return render_template("admin/add_doctors.html")
 
 @api.route("/admin_dashboard/delete_doctor/<int:id>")
+@login_required
 def delete_doctor(id):
     one_doctor = Doctor.query.get(id)
 
@@ -85,6 +87,7 @@ def delete_doctor(id):
     return redirect(url_for('admin_api.admin_dashboard'))
 
 @api.route("/admin_dashboard/delete_patient/<int:id>")
+@login_required
 def delete_patient(id):
     one_patient = Patient.query.get(id)
 
@@ -102,6 +105,7 @@ def delete_patient(id):
 
 
 @api.route("/admin_dashboard/update_doctor/<int:doctor_id>",methods=["GET","POST"])
+@login_required
 def update_doctor(doctor_id):
     doctor = Doctor.query.filter_by(doctor_id=doctor_id).first()
     if not doctor:
@@ -110,7 +114,7 @@ def update_doctor(doctor_id):
     if not user:
         return redirect(url_for('admin_api.admin_dashboard'))
     if request.method == "GET":
-        return render_template("admin/update_doctors.html",doctor_id = doctor_id , name = doctor.name , username = doctor.username , specialization = doctor.specialization , department_id = doctor.department_id)
+        return render_template("admin/update_doctors.html",doctor_id = doctor_id , name = doctor.name , username = doctor.username , department = doctor.department)
     
     name = request.form.get("name")
     username = request.form.get("username")
@@ -132,6 +136,7 @@ def update_doctor(doctor_id):
     return redirect(url_for("admin_api.admin_dashboard"))
 
 @api.route("/admin_dashboard/search",methods=["GET","POST"])
+@login_required
 def search_users():
     query = request.form.get("query","").strip()
     doctors = []
@@ -149,6 +154,7 @@ def search_users():
     return render_template("admin/admin_search.html",doctors = doctors,patients=patients)
 
 @api.route("/admin_dashboard/patient_history/<int:patient_id>")
+@login_required
 def patient_history(patient_id):
     patient = Patient.query.filter_by(patient_id=patient_id).first()
     if not patient:
@@ -161,4 +167,4 @@ def patient_history(patient_id):
     # Get all treatments linked to these appointments
     treatments = Treatment.query.filter(Treatment.appointment_id.in_([appt.appointment_id for appt in appointments])).all()
 
-    return render_template("admin/admin_history.html",patient=patient,treatments=treatments)
+    return render_template("admin/patient_history.html",patient=patient,treatments=treatments)

@@ -1,4 +1,4 @@
-from flask import Flask,Blueprint,render_template,request,flash,redirect,url_for,jsonify,request
+from flask import Flask,Blueprint,render_template,request,flash,redirect,url_for,jsonify
 from flask_login import login_required,current_user
 from application.models import Patient , Appointment , Doctor ,db,Department,Treatment,User
 from datetime import datetime, time as time_class
@@ -12,7 +12,7 @@ def patient_dashboard():
     if current_user.role != "patient":
         flash("Access Denied","danger")
         return redirect(url_for('auth.login'))
-    current_patient = Patient.query.first()  # replace with current_user later
+    current_patient = Patient.query.filter_by(patient_id=current_user.user_id).first()  # replace with current_user later
     db.session.expire_all()
     booked = Appointment.query.filter_by(patient_id=current_patient.patient_id, status="Booked").all()
     completed = Appointment.query.filter_by(patient_id=current_patient.patient_id, status="Completed").all()
@@ -38,6 +38,7 @@ def patient_dashboard():
 from datetime import datetime
 
 @api.route("/book_appointment", methods=["GET", "POST"])
+@login_required
 def book_appointment():
     if request.method == "GET":
         doctors = Doctor.query.all()
@@ -52,10 +53,9 @@ def book_appointment():
         appointment_time = datetime.strptime(time_str, "%H:%M").time()
         selected_date_str = appointment_date.strftime("%Y-%m-%d")
 
-        current_patient = Patient.query.first()
+        current_patient = Patient.query.filter_by(patient_id=current_user.user_id).first()
         doctor = Doctor.query.filter_by(doctor_id=doctor_id).first()
 
-        # ✅ FIXED: check using actual date strings
         available_dates = doctor.availability.split(",") if doctor and doctor.availability else []
         if selected_date_str not in available_dates:
             flash(f"Dr. {doctor.name} is not available on {selected_date_str}. Please select another date.", "alert-danger")
@@ -88,6 +88,7 @@ def book_appointment():
         return redirect(url_for('patient_api.patient_dashboard'))
 
 @api.route("/patient_dashboard/search",methods=["GET","POST"])
+@login_required
 def search_users():
     query = request.form.get("query","").strip()
     doctors = []
@@ -99,6 +100,7 @@ def search_users():
     return render_template("patient/patient_search.html",doctors = doctors)
 
 @api.route("/patient_dashboard/patient_history/<int:patient_id>")
+@login_required
 def patient_history(patient_id):
     patient = Patient.query.filter_by(patient_id=patient_id).first()
     if not patient:
@@ -114,6 +116,7 @@ def patient_history(patient_id):
     return render_template("patient/patient_history.html",patient=patient,treatments=treatments)
 
 @api.route("/patient_dashboard/mark_cancelled/<int:appointment_id>")
+@login_required
 def mark_cancelled(appointment_id):
     appointment = Appointment.query.get(appointment_id)
     if appointment:
@@ -123,6 +126,7 @@ def mark_cancelled(appointment_id):
     return redirect(url_for("patient_api.patient_dashboard"))
 
 @api.route("/check_availability/<int:doctor_id>")
+@login_required
 def check_availability(doctor_id):
     doctor = Doctor.query.filter_by(doctor_id=doctor_id).first()
 
@@ -141,6 +145,7 @@ def check_availability(doctor_id):
     )
 
 @api.route("/patient_dashboard/reschedule/<int:appointment_id>", methods=["GET", "POST"])
+@login_required
 def reschedule_appointment(appointment_id):
     # load appointment
     appointment = Appointment.query.get_or_404(appointment_id)
@@ -266,7 +271,7 @@ def update_patient(id):
     patient.gender = data.get("gender", patient.gender)
     patient.contact = data.get("contact", patient.contact)
     patient.address = data.get("address", patient.address)
-    user = User.query.get(patient.patient_id)
+    user = User.query.filter_by(user_id=patient.patient_id).first()
     if user and "username" in data:
         user.username = data["username"]
 

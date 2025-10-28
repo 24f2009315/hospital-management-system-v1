@@ -12,7 +12,7 @@ def doctor_dashboard():
         flash("Access Denied","danger")
         return redirect(url_for('auth.login'))
     if request.method == "GET":
-        current_doctor=Doctor.query.first()
+        current_doctor=Doctor.query.filter_by(doctor_id=current_user.user_id).first()
         booked = Appointment.query.filter_by(doctor_id=current_doctor.doctor_id, status="Booked").all()
         completed = Appointment.query.filter_by(doctor_id=current_doctor.doctor_id, status="Completed").all()
         cancelled = Appointment.query.filter_by(doctor_id=current_doctor.doctor_id, status="Cancelled").all()
@@ -34,6 +34,7 @@ def doctor_dashboard():
             appointment_status=appointment_status)
 
 @api.route("/doctor_dashboard/mark_completed/<int:appointment_id>")
+@login_required
 def mark_completed(appointment_id):
     appointment = Appointment.query.get(appointment_id)
     if appointment:
@@ -43,6 +44,7 @@ def mark_completed(appointment_id):
     return redirect(url_for("doctor_api.doctor_dashboard"))
 
 @api.route("/doctor_dashboard/mark_cancelled/<int:appointment_id>")
+@login_required
 def mark_cancelled(appointment_id):
     appointment = Appointment.query.get(appointment_id)
     if appointment:
@@ -52,6 +54,7 @@ def mark_cancelled(appointment_id):
     return redirect(url_for("doctor_api.doctor_dashboard"))
 
 @api.route("/doctor_dashboard/update_history/<int:patient_id>", methods=["GET","POST"])
+@login_required
 def update_history(patient_id):
     patient = Patient.query.filter_by(patient_id=patient_id).first()
     if not patient:
@@ -93,6 +96,7 @@ def update_history(patient_id):
     return redirect(url_for('doctor_api.doctor_dashboard'))
 
 @api.route("/doctor_dashboard/patient_history/<int:patient_id>")
+@login_required
 def patient_history(patient_id):
     patient = Patient.query.filter_by(patient_id=patient_id).first()
     if not patient:
@@ -108,6 +112,7 @@ def patient_history(patient_id):
     return render_template("doctor/patient_history.html",patient=patient,treatments=treatments)
 
 @api.route("/update_availability/<int:doctor_id>", methods=["GET", "POST"])
+@login_required
 def update_availability(doctor_id):
     doctor = Doctor.query.filter_by(doctor_id=doctor_id).first()
 
