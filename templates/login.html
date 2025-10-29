@@ -1,16 +1,92 @@
 {% extends "layout.html" %}
 {% block body %}
+<style>
+  body {
+    background-color: #f8f9fa;
+    font-family: "Poppins", sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+
+  .container-login {
+    display: flex;
+    align-items: stretch; /* ✅ makes divider span full height */
+    background: #ffffff;
+    padding: 40px 60px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    width: 850px;
+    min-height: 420px;
+  }
+
+  .app-name {
+    flex: 1;
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: #0d6efd;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-right: 2px solid #dee2e6; /* ✅ taller vertical line */
+    margin-right: 40px;
+  }
+
+  .login-form {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  h3 {
+    text-align: center;
+    color: #0d6efd;
+    margin-bottom: 20px;
+    font-weight: 600;
+  }
+
+  .btn-primary {
+    width: 100%;
+    background-color: #0d6efd;
+    border: none;
+  }
+
+  a {
+    color: #0d6efd;
+    text-decoration: none;
+    font-size: 0.9rem;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+</style>
+
+<div class="container-login">
+  <div class="app-name">
+    HealthEase
+  </div>
+
+  <div class="login-form">
     <form action="{{ url_for('auth.login') }}" method="post">
-        <h3>Login</h3>
-        <div class="mb-3">
-            <label for="formGroupExampleInput" class="form-label">Username</label>
-            <input type="text" class="form-control" id="formGroupExampleInput" name = "username" placeholder="Enter your username" required>
-        </div>
-        <div class="mb-3">
-            <label for="formGroupExampleInput2" class="form-label">Password</label>
-            <input type="password" class="form-control" id="formGroupExampleInput2" name = "password" placeholder="Enter your password" required>
-        </div>
-        <a href="/signup">Don't have an account sign up</a><br><br>
-        <button type="submit" class="btn btn-outline-dark">Login</button>
+      <h3>Login</h3>
+      <div class="mb-3">
+        <label class="form-label">Username</label>
+        <input type="text" class="form-control" name="username" placeholder="Enter your username" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Password</label>
+        <input type="password" class="form-control" name="password" placeholder="Enter your password" required>
+      </div>
+      <div class="text-end mb-3">
+        <a href="/signup">Don’t have an account? Sign up</a>
+      </div>
+      <button type="submit" class="btn btn-primary">Login</button>
     </form>
+  </div>
+</div>
 {% endblock %}

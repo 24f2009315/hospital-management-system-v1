@@ -217,6 +217,52 @@ def reschedule_appointment(appointment_id):
     # GET -> render form
     return render_template("patient/reschedule.html", appointment=appointment, doctor=doctor)
 
+@api.route("/patient_dashboard/update_profile", methods=["GET", "POST"])
+@login_required
+def update_profile():
+    # Allow only patient role to access
+    if current_user.role != "patient":
+        flash("Access denied!", "danger")
+        return redirect(url_for("auth.login"))
+
+    # Get the logged-in patient
+    patient = Patient.query.filter_by(patient_id=current_user.user_id).first()
+    if not patient:
+        flash("Patient record not found!", "danger")
+        return redirect(url_for("patient_api.patient_dashboard"))
+
+    if request.method == "POST":
+        # Get all form fields
+        name = request.form.get("name")
+        age = request.form.get("age")
+        gender = request.form.get("gender")
+        contact = request.form.get("contact")
+        address = request.form.get("address")
+
+        # Simple backend validation
+        if not name or not age or not contact:
+            flash("Name, Age, and Contact are required!", "warning")
+            return redirect(url_for("patient_api.update_profile"))
+
+        # Update patient table
+        patient.name = name
+        patient.age = age
+        patient.gender = gender
+        patient.contact = contact
+        patient.address = address
+
+        # Update corresponding User table
+        user = User.query.filter_by(user_id=current_user.user_id).first()
+        if user:
+            user.name = name
+
+        db.session.commit()
+        flash("Profile updated successfully!", "success")
+        return redirect(url_for("patient_api.patient_dashboard"))
+
+    # Render the update form
+    return render_template("patient/update_profile.html", patient=patient)
+
 
 
 # ✅ GET all patients

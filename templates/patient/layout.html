@@ -10,12 +10,13 @@
 
 <nav class="navbar bg-body-tertiary">
   <div class="container-fluid">
-    <a class="navbar-brand">Navbar</a>
-    <form class="d-flex ms-auto" role="search" method="POST" action="{{ url_for('patient_api.search_users') }}">
-      <input class="form-control me-2" type="search" name = "query" placeholder="Search Doctor/Patients" aria-label="Search"/>
-      <button class="btn btn-outline-dark" type="submit">Search</button>
+    <a class="navbar-brand">Navbar</a><br>
+    <form class="d-flex ms-auto" role="search" method="POST" action="{{ url_for('patient_api.search_users') }}"><br>
+      <input class="form-control me-2" type="search" name = "query" placeholder="Search Doctor/Patients" aria-label="Search"/><br>
+      <button class="btn btn-success" type="submit">Search</button><br>
     </form>
-    <a href="{{ url_for('auth.login') }}">logout</a>
+    <br>
+    <a href="{{ url_for('auth.login') }}" class="btn btn-warning">logout</a>
   </div>
 </nav>
 

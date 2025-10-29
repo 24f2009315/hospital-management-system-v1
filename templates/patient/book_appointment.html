@@ -9,7 +9,7 @@
       <select name="doctor_id" id="doctor" class="form-select" required>
         <option value="">-- Select a Doctor --</option>
         {% for doc in doctors %}
-          <option value="{{ doc.doctor_id }}">{{ doc.name }} - {{ doc.specialization }}</option>
+          <option value="{{ doc.doctor_id }}">{{ doc.name }} - {{ doc.department }}</option>
         {% endfor %}
       </select>
     </div>
@@ -25,8 +25,8 @@
       </div>
     </div>
 
-    <button type="submit" class="btn btn-outline-dark">Confirm Appointment</button>
-    <a href="{{ url_for('patient_api.patient_dashboard') }}">Your Dashboard</a>
+    <button type="submit" class="btn btn-success">Confirm Appointment</button>
+    <a href="{{ url_for('patient_api.patient_dashboard') }}" class="btn btn-link">Your Dashboard</a>
   </form>
 </div>
 {% endblock %}

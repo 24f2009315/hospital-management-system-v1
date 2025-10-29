@@ -4,33 +4,33 @@
     <!-- Charts Section -->
         <div class="card shadow-lg p-4 mb-4 rounded-4">
             <h3 class="text-center text-primary mb-4 fw-bold">📊 Hospital Overview</h3>
-            <canvas id="summaryChart" height="120"></canvas>
+            <canvas id="summaryChart" height="200"></canvas>
         </div>
-    <h1>Doctors</h1>
+    <h2>Doctors</h2>
     <div class="container-fluid d-flex flex-wrap">
         {% for doc in doctors %}
         <div class="card col-3 m-2">
             <div class="card-body">
                 <h3 align="center">{{ doc.name }}</h3>
                 <p>Department: {{ doc.department }}</p>
-                <a href="{{ url_for('admin_api.delete_doctor', id=doc.id) }}" class="btn btn-outline-danger">Delete</a>
-                <a href="{{ url_for('admin_api.update_doctor', doctor_id=doc.doctor_id) }}" class="btn btn-outline-warning">Update</a>
+                <a href="{{ url_for('admin_api.delete_doctor', id=doc.id) }}" class="btn btn-danger">Delete</a>
+                <a href="{{ url_for('admin_api.update_doctor', doctor_id=doc.doctor_id) }}" class="btn btn-warning">Update</a>
             </div>
         </div>
         {% endfor %}
     </div>
-    <h1>Patients</h1>
+    <h2>Patients</h2>
     <div class="container-fluid d-flex flex-wrap">
         {% for pat in patients %}
             <div class="card col-3 m-2">
                 <div class="card-body">
                     <h3 align="center">{{ pat.name }}</h3>
-                    <a href="{{ url_for('admin_api.delete_patient', id=pat.id) }}" class="btn btn-outline-danger">Delete</a>
+                    <a href="{{ url_for('admin_api.delete_patient', id=pat.id) }}" class="btn btn-danger">Delete</a>
                 </div>
             </div>
         {% endfor %}
     </div>
-    <h1>Booked Appointments</h1>
+    <h2>Booked Appointments</h2>
     <table class="table table-striped">
         <thead>
             <tr>
@@ -49,13 +49,13 @@
                 <td>{{ appt.doctor_id }}</td>
                 <td>{{ doctor_department_map.get(appt.doctor_id, "N/A") }}</td>
                 <td>
-                    <a href="{{ url_for('admin_api.patient_history',patient_id=appt.patient_id)}}">View</a>
+                    <a href="{{ url_for('admin_api.patient_history',patient_id=appt.patient_id)}}" class="btn btn-success">View</a>
                 </td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
-    <h1>Completed Appointments</h1>
+    <h2>Completed Appointments</h2>
     <table class="table table-striped">
         <thead>
             <tr>
@@ -74,13 +74,13 @@
                 <td>{{ appt.doctor_id }}</td>
                 <td>{{ doctor_department_map.get(appt.doctor_id, "N/A") }}</td>
                 <td>
-                    <a href="{{ url_for('admin_api.patient_history',patient_id=appt.patient_id)}}">View</a>
+                    <a href="{{ url_for('admin_api.patient_history',patient_id=appt.patient_id)}}" class="btn btn-success">View</a>
                 </td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
-    <h1>Cancelled Appointments</h1>
+    <h2>Cancelled Appointments</h2>
     <table class="table table-striped">
         <thead>
             <tr>
@@ -99,13 +99,12 @@
                 <td>{{ appt.doctor_id }}</td>
                 <td>{{ doctor_department_map.get(appt.doctor_id, "N/A") }}</td>
                 <td>
-                    <a href="{{ url_for('admin_api.patient_history',patient_id=appt.patient_id)}}">View</a>
+                    <a href="{{ url_for('admin_api.patient_history',patient_id=appt.patient_id)}}" class="btn btn-success">View</a>
                 </td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
-    <a href="{{ url_for('auth.login') }}">logout</a>
     </div>
     <script>
         // Data from Flask (Jinja2)

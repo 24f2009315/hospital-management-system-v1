@@ -3,8 +3,9 @@
   <div class="container-fluid">
     <h2>Welcome, {{ name }}</h2>
   </div>
-  <a href="{{ url_for('patient_api.book_appointment') }}">Book an Appointment</a>
-  <a href="{{ url_for('patient_api.patient_history',patient_id=patient_id) }}">View History</a>
+  <a href="{{ url_for('patient_api.book_appointment') }}" class="btn btn-success">Book an Appointment</a>
+  <a href="{{ url_for('patient_api.patient_history',patient_id=patient_id) }}" class="btn btn-primary">View History</a>
+  <a href="{{ url_for('patient_api.update_profile')}}" class="btn btn-primary">Update Profile</a><br>
   <h4 class="mt-4">All Doctors</h4>
 {% if all_doctors %}
   <table class="table table-bordered mt-3">
@@ -24,7 +25,7 @@
           <td>{{ doc.name }}</td>
           <td>{{ doc.username }}</td>
           <td>{{ doc.department }}</td>
-          <td><a href="{{ url_for('patient_api.check_availability',doctor_id=doc.doctor_id)}}">View Availability</a></td>
+          <td><a href="{{ url_for('patient_api.check_availability',doctor_id=doc.doctor_id)}}" class="btn btn-warning">View Availability</a></td>
         </tr>
       {% endfor %}
     </tbody>

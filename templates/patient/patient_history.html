@@ -1,29 +1,44 @@
-<h1>Patient History</h1>
-<p>Patient Name: {{ patient.name }}</p>
-<form action="get">
-{% if treatments %}
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Appointment ID</th>
-            <th>Diagnosis</th>
-            <th>Prescription</th>
-            <th>Notes</th>
-        </tr>
-    </thead>
-    <tbody>
-    {% for treatment in treatments %}
-        <tr>
-            <td>{{ treatment.appointment_id }}</td>
-            <td>{{ treatment.diagnosis }}</td>
-            <td>{{ treatment.prescription }}</td>
-            <td>{{ treatment.notes if treatment.notes else "-" }}</td>
-        </tr>
-    {% endfor %}
-    </tbody>
-</table>
-{% else %}
-<p>No history available for this patient.</p>
-{% endif %}
-<a href="{{ url_for('patient_api.patient_dashboard') }}">Go Back</a>
-</form>
+{% extends "patient/layout.html" %}
+{% block body %}
+<div class="container mt-5">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-body">
+            <h2 class="text-center text-primary mb-4">Patient History</h2>
+            <div class="mb-4">
+                <h5>Patient Name: {{ patient.name }}</h5>
+            </div>
+            {% if treatments %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-primary">
+                        <tr>
+                            <th>Appointment ID</th>
+                            <th>Diagnosis</th>
+                            <th>Prescription</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for treatment in treatments %}
+                        <tr>
+                            <td>{{ treatment.appointment_id }}</td>
+                            <td>{{ treatment.diagnosis }}</td>
+                            <td>{{ treatment.prescription }}</td>
+                            <td>{{ treatment.notes if treatment.notes else "-" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-info text-center">
+                <p>No history available for this patient.</p>
+            </div>
+            {% endif %}
+            <div class="text-center mt-4">
+                <a href="{{ url_for('patient_api.patient_dashboard') }}" class="btn btn-warning">Go Back</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
