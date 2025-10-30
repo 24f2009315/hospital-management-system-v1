@@ -2,7 +2,7 @@
 
 {% block body %}
 <div class="container mt-4">
-    <h3 class="mb-3">Search Results for "{{ query }}"</h3>
+    <h3 class="mb-3">Search Results for "{{ request.form.get('query') }}"</h3>
 
     <div class="card mb-3">
         <div class="card-header">Doctors</div>
