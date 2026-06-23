@@ -70,7 +70,7 @@ All tables are programmatically created during first run — no manual DB setup 
 ---
 
 ## 🖥️ Folder Structure
-
+```text
 Hospital-Management-System-v1
 |--application
 |    |--admin_api.py
@@ -110,7 +110,7 @@ Hospital-Management-System-v1
 |--app.py
 |--README.md
 |--project_report.pdf
-
+```
 ## Getting Started
 
 ### 1️⃣ Clone the Repository
