@@ -126,5 +126,5 @@ pip install -r requirements.txt
 python app.py
 Access the app at 127.0.0.1:5000
 
-## Watch the Video Here
+## Watch the Demo Video Here
 [https://drive.google.com/file/d/1tgE6L2REwMovCwr6BmdMNwjgP1ZH3JyG/view?usp=drive_link]
